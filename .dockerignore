@@ -1,0 +1,20 @@
+# VCS
+.git
+.gitignore
+
+# Node and builds
+node_modules
+**/node_modules
+**/dist
+**/.turbo
+**/coverage
+
+# Editor/OS
+.vscode
+.DS_Store
+Thumbs.db
+
+# Env files (copy explicitly if needed)
+*.env
+.env.*
+

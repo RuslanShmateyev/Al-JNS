@@ -1,16 +1,19 @@
 {
     "compilerOptions": {
-        "target": "ES2021",
+        "target": "ES2022",
         "module": "CommonJS",
         "declaration": true,
         "outDir": "./dist",
-        "rootDir": "./",
         "strict": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true
+        "forceConsistentCasingInFileNames": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "strictPropertyInitialization": false
     },
     "include": [
+        "src/**/*",
         "index.ts"
     ]
 }

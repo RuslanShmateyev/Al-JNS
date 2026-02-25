@@ -25,3 +25,5 @@ lerna-debug.log*
 .tmp
 
 pnpm-lock.yaml
+
+/generated/prisma

@@ -1,0 +1,18 @@
+{
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        /* Backend-specific (NestJS) */
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        /* Backend doesn't need declarations */
+        "declaration": false,
+        "declarationMap": false,
+        /* But needs source maps */
+        "sourceMap": true,
+        "removeComments": true,
+        "incremental": true
+    }
+}
