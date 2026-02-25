@@ -21,7 +21,7 @@ export class AiService {
         const schema = { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } };
         const prompt = `Тема: ${topic}. Уровень знаний: ${level}. 
     Тебе нужно создать список интересов (знания которых помогут в проекте). 
-    Сделай так, чтобы вопросы не дублировались по темам.`;
+    Сделай так, чтобы вопросы не дублировались по темам, пиши оригинально.`;
 
         const result = await this.getModel(schema).generateContent(prompt);
         return JSON.parse(result.response.text());
@@ -31,7 +31,7 @@ export class AiService {
     async getProjects(topic: string, level: string, interests: string[]): Promise<string[]> {
         const schema = { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } };
         const prompt = `Тема: ${topic}. Уровень знаний: ${level}. Интересы: ${interests.join(', ')}.
-    На основе этих интересов создай список мини-проектов, чтобы проходить все темы по порядку, как в roadmap.`;
+    На основе этих интересов создай список мини-проектов, чтобы проходить все темы по порядку, как в roadmap. Сделай так, чтобы вопросы не дублировались по темам, пиши оригинально.`;
 
         const result = await this.getModel(schema).generateContent(prompt);
         return JSON.parse(result.response.text());
@@ -54,7 +54,7 @@ export class AiService {
 
         const prompt = `Тебе нужно создать roadmap, по заданной теме: ${topic}.
     Сделай для уровня: ${level}. Больше опирайся на интересы: ${interests.join(', ')}.
-    По мере прохождения roadmap вы делаете проект: ${project}.`;
+    По мере прохождения roadmap вы делаете проект: ${project}. Сделай так, чтобы вопросы не дублировались по темам, пиши оригинально.`;
 
         const result = await this.getModel(schema).generateContent(prompt);
         return JSON.parse(result.response.text());
