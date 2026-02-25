@@ -1,1 +1,1 @@
-export * from './src/entities/user.entity';
+// This package exports database connection utilities and base configuration

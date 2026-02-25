@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from '@al-jns/database';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { UsersModule } from '../modules/users/users.module';
 
 @Module({
   imports: [
@@ -12,7 +12,7 @@ import { AppService } from './app.service';
       autoLoadEntities: true,
       synchronize: false,
     }),
-    TypeOrmModule.forFeature([User]),
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

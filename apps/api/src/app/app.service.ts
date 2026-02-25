@@ -1,14 +1,8 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from '@al-jns/database';
 
 @Injectable()
 export class AppService implements OnModuleInit {
-  constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-  ) { }
+  constructor() { }
 
   async onModuleInit() {
     // Initialization logic if any
