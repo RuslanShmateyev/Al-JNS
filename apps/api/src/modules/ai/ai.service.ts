@@ -8,7 +8,7 @@ export class AiService {
     // Метод для настройки модели под конкретную задачу
     private getModel(schema: any) {
         return this.genAI.getGenerativeModel({
-            model: "gemini-1.5-flash",
+            model: "gemini-3-flash",
             generationConfig: {
                 responseMimeType: "application/json",
                 responseSchema: schema,
