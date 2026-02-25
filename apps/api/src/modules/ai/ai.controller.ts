@@ -1,22 +1,23 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { AiService } from './ai.service';
+import { GetInterestsDto, GetProjectsDto, GenerateRoadmapDto } from '@al-jns/contracts';
 
 @Controller('ai')
 export class AiController {
     constructor(private readonly aiService: AiService) { }
 
     @Post('interests')
-    async getInterests(@Body() body: { topic: string; level: string }) {
-        return this.aiService.getInterests(body.topic, body.level);
+    async getInterests(@Body() dto: GetInterestsDto) {
+        return this.aiService.generateInterests(dto.topic, dto.level);
     }
 
     @Post('projects')
-    async getProjects(@Body() body: { topic: string; level: string; interests: string[] }) {
-        return this.aiService.getProjects(body.topic, body.level, body.interests);
+    async getProjects(@Body() dto: GetProjectsDto) {
+        return this.aiService.generateProjects(dto.topic, dto.level, dto.interests);
     }
 
     @Post('roadmap')
-    async generateRoadmap(@Body() body: { topic: string; level: string; interests: string[]; project: string }) {
-        return this.aiService.generateRoadmap(body.topic, body.level, body.interests, body.project);
+    async generateRoadmap(@Body() dto: GenerateRoadmapDto) {
+        return this.aiService.generateRoadmap(dto.topic, dto.level, dto.interests, dto.project);
     }
 }

@@ -9,7 +9,7 @@ export class Roadmap {
     title: string;
 
     @Column({ nullable: false })
-    difficulty: number;
+    nodes: string;
 
     @Column({ nullable: false })
     userid: string;

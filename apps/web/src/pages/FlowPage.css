@@ -1,0 +1,72 @@
+.flow-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    flex: 1;
+}
+
+.flow-header {
+    margin-bottom: 1.5rem;
+}
+
+.flow-header h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.flow-header p {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.flow-wrapper {
+    width: 100%;
+    height: 85vh;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #fafbfc;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+
+/* Custom Node Styling */
+.react-flow__node.custom-node {
+    border-radius: 12px;
+    border-width: 1px;
+    border-style: solid;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    background-color: white;
+    /* Base background so it isn't transparent initially */
+}
+
+/* Completed - Green */
+.react-flow__node.custom-node-completed {
+    border-color: rgba(63, 255, 49, 1);
+}
+
+.react-flow__node.custom-node-completed:hover {
+    background-color: #EEFFDE;
+    /* Light green derived from border */
+}
+
+/* In Progress - Yellow */
+.react-flow__node.custom-node-in-action {
+    border-color: rgba(255, 242, 0, 1);
+}
+
+.react-flow__node.custom-node-in-action:hover {
+    background-color: #FDFFDE;
+}
+
+/* Default - Grey */
+.react-flow__node.custom-node-default {
+    border-color: rgba(148, 145, 145, 1);
+}
+
+.react-flow__node.custom-node-default:hover {
+    background-color: #F2F2F2;
+    /* Light grey derived from border */
+}

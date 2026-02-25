@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Roadmaps } from './roadmap.entity';
+import { Roadmap } from './roadmap.entity';
 import { RoadmapsService } from './roadmaps.service';
-import { RoadmapsController } from './roadmaps.controller';
+import { RoadmapController } from './roadmaps.controller';
+import { AiModule } from '../ai/ai.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Roadmaps])],
-    controllers: [RoadmapsController],
+    imports: [TypeOrmModule.forFeature([Roadmap]), AiModule],
+    controllers: [RoadmapController],
     providers: [RoadmapsService],
     exports: [RoadmapsService],
 })

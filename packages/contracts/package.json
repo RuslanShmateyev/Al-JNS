@@ -1,6 +1,7 @@
 {
     "name": "@al-jns/contracts",
     "version": "1.0.0",
+    "type": "module",
     "description": "Shared DTOs and types",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
