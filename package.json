@@ -12,8 +12,8 @@
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.27.0",
-  "dependencies": {},
   "devDependencies": {
+    "@types/node": "^25.3.0",
     "turbo": "latest"
   }
 }
