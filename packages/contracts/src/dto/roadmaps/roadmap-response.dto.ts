@@ -2,6 +2,7 @@ export class RoadmapResponseDto {
     id!: string;
     title!: string;
     nodes!: string;
-    userid!: string;
+    authorId!: string;
     createdAt!: Date;
+    progress!: number;
 }

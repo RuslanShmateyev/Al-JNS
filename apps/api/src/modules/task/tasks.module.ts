@@ -1,14 +1,16 @@
 // src/app.module.ts
 import { Module } from '@nestjs/common';
-import { AiModule } from './ai.module';
-import { UsersModule } from './users.module';
-import { RoadmapsModule } from './roadmaps.module';
+import { TaskController } from './tasks.controller';
+import { TasksService } from './tasks.service';
+import { AiModule } from '../ai/ai.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Task } from './task.entity';
 
 @Module({
     imports: [
-        UsersModule,
-        RoadmapsModule,
-        AiModule, // Подключаем наш новый AI модуль
+        TypeOrmModule.forFeature([Task]), AiModule
     ],
+    controllers: [TaskController],
+    providers: [TasksService],
 })
-export class AppModule { }
+export class TasksModule { }

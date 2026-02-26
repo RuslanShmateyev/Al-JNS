@@ -45,6 +45,22 @@ export class AiService {
 ВЕСЬ ОТВЕТ ДОЛЖЕН СООТВЕТСТВОВАТЬ УКАЗАННОМУ ВЫШЕ ФОРМАТУ`;
     }
 
+    getTaskPrompt(nodeTitle: string, level: string) {
+        return `Ты — преподаватель. Создай одно контрольное задание в свободной форме 
+по теме "${nodeTitle}" для уровня ${level}. 
+Это должен быть вопрос, требующий развернутого ответа или мини-эссе. 
+В ответе выдай ТОЛЬКО текст задания.
+Формат для ответа: { title: string, description: string, difficulty: number }
+ВЕСЬ ОТВЕТ ДОЛЖЕН СООТВЕТСТВОВАТЬ УКАЗАННОМУ ВЫШЕ ФОРМАТУ`;
+    }
+
+    getCheckAnswerPrompt(task: string, userAnswer: string) {
+        return `Задание: ${task}\nОтвет пользователя: ${userAnswer}\n
+Оцени ответ. Дай конструктивный фидбек и укажи, что было упущено.
+Формат для ответа: { status: string, feedback: string }
+ВЕСЬ ОТВЕТ ДОЛЖЕН СООТВЕТСТВОВАТЬ УКАЗАННОМУ ВЫШЕ ФОРМАТУ`;
+    }
+
     async generateByPrompt(prompt: string): Promise<any> {
         const result = await this.genAI.models.generateContent({
             model: ((await this.getModel()).name || ""),
@@ -77,5 +93,15 @@ export class AiService {
     async generateRoadmapNode(level: string, project: string, nodeName: string): Promise<{ description: string, tasks: { title: string, description: string, difficulty: number }[], history: string }> {
         const prompt = this.getRoadmapNodePrompt(level, project, nodeName);
         return this.generateByPrompt(prompt) as Promise<{ description: string, tasks: { title: string, description: string, difficulty: number }[], history: string }>;
+    }
+
+    async generateTask(nodeTitle: string, level: string): Promise<{ title: string, description: string, difficulty: number }> {
+        const prompt = this.getTaskPrompt(nodeTitle, level);
+        return this.generateByPrompt(prompt) as Promise<{ title: string, description: string, difficulty: number }>;
+    }
+
+    async checkAnswer(task: string, userAnswer: string): Promise<{ status: string, feedback: string }> {
+        const prompt = this.getCheckAnswerPrompt(task, userAnswer);
+        return this.generateByPrompt(prompt) as Promise<{ status: string, feedback: string }>;
     }
 }

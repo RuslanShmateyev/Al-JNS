@@ -8,11 +8,15 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { useAuth } from '../context/AuthContext';
 import './MainLayout.css';
 
 export function MainLayout() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const location = useLocation();
+    const { logout, user } = useAuth();
 
     const toggleSidebar = (open: boolean) => () => {
         setIsSidebarOpen(open);
@@ -60,6 +64,18 @@ export function MainLayout() {
                         <MenuIcon />
                     </IconButton>
                     <div className="logo">My App</div>
+                </div>
+                <div className="header-right" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    {user && <span style={{ color: '#666', fontSize: '14px' }}>{user.email}</span>}
+                    <Button
+                        onClick={logout}
+                        startIcon={<LogoutIcon />}
+                        variant="outlined"
+                        size="small"
+                        sx={{ color: '#4f46e5', borderColor: '#4f46e5' }}
+                    >
+                        Logout
+                    </Button>
                 </div>
             </header>
 

@@ -3,19 +3,31 @@ import { MainLayout } from './layouts/MainLayout';
 import { Home } from './pages/Home';
 import { FlowPage } from './pages/FlowPage';
 import { NotFound } from './pages/NotFound';
+import { Login } from './pages/Login';
+import { Register } from './pages/Register';
+import { AuthProvider } from './context/AuthContext';
+import { ProtectedRoute } from './ProtectedRoute';
 import './App.css';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<Home />} />
-          <Route path="flow/:id" element={<FlowPage />} />
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<MainLayout />}>
+              <Route index element={<Home />} />
+              <Route path="flow/:id" element={<FlowPage />} />
+            </Route>
+          </Route>
+
           <Route path="*" element={<NotFound />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

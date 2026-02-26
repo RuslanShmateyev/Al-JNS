@@ -1,22 +1,26 @@
 import { Controller, Post, Body } from '@nestjs/common';
-import { AiService } from './ai.service';
+import { TasksService } from './tasks.service';
+import { Task } from './task.entity';
+import { CurrentUser } from '../auth/current-user.decorator';
+import { User } from '../users/user.entity';
 
-@Controller('ai')
-export class AiController {
-    constructor(private readonly aiService: AiService) { }
+@Controller('task')
+export class TaskController {
+    constructor(private readonly taskService: TasksService) { }
 
-    @Post('interests')
-    async getInterests(@Body() body: { topic: string; level: string }) {
-        return this.aiService.getInterests(body.topic, body.level);
+    @Post('generate')
+    async generateTask(
+        @Body() body: { nodeTitle: string, level: string },
+        @CurrentUser() user: User,
+    ): Promise<Task> {
+        return this.taskService.generateTask(body.nodeTitle, body.level, user.id);
     }
 
-    @Post('projects')
-    async getProjects(@Body() body: { topic: string; level: string; interests: string[] }) {
-        return this.aiService.getProjects(body.topic, body.level, body.interests);
-    }
-
-    @Post('roadmap')
-    async generateRoadmap(@Body() body: { topic: string; level: string; interests: string[]; project: string }) {
-        return this.aiService.generateRoadmap(body.topic, body.level, body.interests, body.project);
+    @Post('check')
+    async checkAnswer(
+        @Body() body: { taskId: string, userAnswer: string },
+        @CurrentUser() user: User,
+    ): Promise<Task> {
+        return this.taskService.checkAnswer(body.taskId, body.userAnswer, user.id);
     }
 }

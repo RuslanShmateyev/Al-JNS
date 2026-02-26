@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { User } from '../users/user.entity';
 
 @Entity('roadmaps')
 export class Roadmap {
@@ -12,7 +13,10 @@ export class Roadmap {
     nodes: string;
 
     @Column({ nullable: false })
-    userid: string;
+    authorId: string;
+
+    @ManyToOne(() => User)
+    author: User;
 
     @CreateDateColumn()
     createdAt: Date;

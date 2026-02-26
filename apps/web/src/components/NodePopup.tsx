@@ -3,15 +3,17 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import CheckIcon from '@mui/icons-material/Check';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Tooltip from '@mui/material/Tooltip';
+import { CompleteNodeDto } from '@al-jns/contracts';
 import './NodePopup.css';
 
 interface NodePopupProps {
     node: Node | null;
+    roadmapId: string;
     isOpen: boolean;
     onClose: () => void;
 }
 
-export function NodePopup({ node, isOpen, onClose }: NodePopupProps) {
+export function NodePopup({ node, roadmapId, isOpen, onClose }: NodePopupProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const [isNotificationPopupOpen, setIsNotificationPopupOpen] = useState(false);
     const [notificationDelay, setNotificationDelay] = useState('');
@@ -40,14 +42,31 @@ export function NodePopup({ node, isOpen, onClose }: NodePopupProps) {
     }, [description, searchQuery]);
 
     const handleComplete = async () => {
+        if (!node) return;
         try {
-            console.log(`Sending Complete request for node ${node?.id}...`);
-            // Mock backend request
-            await new Promise(resolve => setTimeout(resolve, 500));
-            alert(`Node ${node?.id} completed successfully!`);
+            console.log(`Sending Complete request for node ${node.id}...`);
+            const body: CompleteNodeDto = {
+                id: roadmapId,
+                nodeName: node.id // In FlowPage, node.id is node.title
+            };
+
+            const response = await fetch('http://localhost:3333/roadmap/completeNode', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to complete node');
+            }
+
+            alert(`Node ${node.id} completed successfully!`);
             onClose();
+            // Optional: refresh page or state to show green node
+            window.location.reload();
         } catch (error) {
             console.error('Failed to complete node', error);
+            alert('Failed to complete node. Please try again.');
         }
     };
 

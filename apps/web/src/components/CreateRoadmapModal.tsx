@@ -29,7 +29,7 @@ export function CreateRoadmapModal({ isOpen, onClose }: CreateRoadmapModalProps)
             const body: GetInterestsDto = { topic, level };
             const response = await fetch('http://localhost:3333/roadmap/interests', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
                 body: JSON.stringify(body),
             });
             const data = await response.json();
@@ -48,7 +48,7 @@ export function CreateRoadmapModal({ isOpen, onClose }: CreateRoadmapModalProps)
             const body: GetProjectsDto = { topic, level, interests: selectedInterests };
             const response = await fetch('http://localhost:3333/roadmap/projects', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
                 body: JSON.stringify(body),
             });
             const data = await response.json();
@@ -72,7 +72,7 @@ export function CreateRoadmapModal({ isOpen, onClose }: CreateRoadmapModalProps)
             };
             const response = await fetch('http://localhost:3333/roadmap/generate', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
                 body: JSON.stringify(body),
             });
             const data = await response.json();

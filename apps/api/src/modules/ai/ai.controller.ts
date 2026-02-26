@@ -4,8 +4,8 @@ import { AiService } from './ai.service';
 import { GetInterestsDto, GetProjectsDto, GenerateRoadmapDto } from '@al-jns/contracts';
 
 @Controller('ai/tasks')
-export class TasksController {
-    constructor(private readonly tasksService: TasksService) { }
+export class AiController {
+    constructor(private readonly aiService: AiService) { }
 
     @Post('interests')
     async getInterests(@Body() dto: GetInterestsDto) {

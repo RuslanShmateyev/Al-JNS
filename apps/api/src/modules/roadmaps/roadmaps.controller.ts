@@ -1,6 +1,9 @@
 import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { RoadmapsService } from './roadmaps.service';
-import { GetInterestsDto, GetProjectsDto, GenerateRoadmapDto, RoadmapResponseDto } from '@al-jns/contracts';
+import { GetInterestsDto, GetProjectsDto, GenerateRoadmapDto, RoadmapResponseDto, CompleteNodeDto } from '@al-jns/contracts';
+import { Roadmap } from './roadmap.entity';
+import { CurrentUser } from '../auth/current-user.decorator';
+import { User } from '../users/user.entity';
 
 @Controller('roadmap')
 export class RoadmapController {
@@ -8,14 +11,15 @@ export class RoadmapController {
 
     @Post('generate')
     async generate(
-        @Body() dto: GenerateRoadmapDto
+        @Body() dto: GenerateRoadmapDto,
+        @CurrentUser() user: User,
     ): Promise<RoadmapResponseDto> {
-        return this.roadmapService.generateAndCreate(dto.topic, dto.level, dto.interests, dto.project);
+        return this.roadmapService.generateAndCreate(dto.topic, dto.level, dto.interests, dto.project, user.id);
     }
 
     @Get()
-    async findAll(): Promise<RoadmapResponseDto[]> {
-        return this.roadmapService.findAll();
+    async findAll(@CurrentUser() user: User): Promise<RoadmapResponseDto[]> {
+        return this.roadmapService.findAll(user.id);
     }
 
     @Post('interests')
@@ -33,7 +37,15 @@ export class RoadmapController {
     }
 
     @Get(':id')
-    async findOne(@Param('id') id: string): Promise<RoadmapResponseDto> {
-        return this.roadmapService.findOne(id);
+    async findOne(@Param('id') id: string, @CurrentUser() user: User): Promise<RoadmapResponseDto> {
+        return this.roadmapService.findOne(id, user.id);
+    }
+
+    @Post('completeNode')
+    async completeNode(
+        @Body() dto: CompleteNodeDto,
+        @CurrentUser() user: User,
+    ): Promise<Roadmap> {
+        return this.roadmapService.completeNode(dto.id, dto.nodeName, user.id);
     }
 }

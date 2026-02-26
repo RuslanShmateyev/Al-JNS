@@ -1,45 +1,56 @@
 // src/ai/tasks/tasks.service.ts
 import { Injectable } from '@nestjs/common';
-import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Task } from './task.entity';
+import { AiService } from '../ai/ai.service';
 
 @Injectable()
 export class TasksService {
-    private genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+    constructor(
+        @InjectRepository(Task)
+        private taskRepository: Repository<Task>,
+        private aiService: AiService,
+    ) { }
 
-    // 1. Генерируем задание в свободной форме
-    async generateTask(nodeTitle: string, level: string) {
-        const model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-        const prompt = `Ты — преподаватель. Создай одно контрольное задание в свободной форме 
-    по теме "${nodeTitle}" для уровня ${level}. 
-    Это должен быть вопрос, требующий развернутого ответа или мини-эссе. 
-    В ответе выдай ТОЛЬКО текст задания.`;
-
-        const result = await model.generateContent(prompt);
-        return { instruction: result.response.text() };
+    async saveTask(task: Partial<Task>, userId: string): Promise<Task> {
+        return this.taskRepository.save({
+            ...task,
+            authorId: userId,
+        });
     }
 
-    // 2. Проверяем ответ пользователя и даем фидбек
-    async checkAnswer(task: string, userAnswer: string) {
-        const schema = {
-            type: SchemaType.OBJECT,
-            properties: {
-                score: { type: SchemaType.NUMBER, description: "Оценка от 1 до 10" },
-                feedback: { type: SchemaType.STRING, description: "Развернутый разбор ответа" },
-                missingPoints: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING }, description: "Что пользователь упустил" }
-            },
-            required: ["score", "feedback"]
-        };
+    async getTaskById(id: string, userId: string): Promise<Task | null> {
+        return this.taskRepository.findOne({ where: { id, authorId: userId } });
+    }
 
-        const model = this.genAI.getGenerativeModel({
-            model: "gemini-3-flash",
-            generationConfig: { responseMimeType: "application/json", responseSchema: schema }
-        });
+    async updateTask(id: string, data: Partial<Task>, userId: string): Promise<Task> {
+        await this.taskRepository.update({ id, authorId: userId }, data);
+        const task = await this.taskRepository.findOne({ where: { id, authorId: userId } });
+        if (!task) {
+            throw new Error('Task not found');
+        }
+        return task;
+    }
 
-        const prompt = `Задание: ${task}\nОтвет пользователя: ${userAnswer}\n
-    Оцени ответ. Дай конструктивный фидбек и укажи, что было упущено.`;
+    async generateTask(nodeTitle: string, level: string, userId: string): Promise<Task> {
+        const task = await this.aiService.generateTask(nodeTitle, level);
+        return this.saveTask({
+            nodeTitle,
+            status: 'pending',
+            ...task
+        }, userId);
+    }
 
-        const result = await model.generateContent(prompt);
-        return JSON.parse(result.response.text());
+    async checkAnswer(taskId: string, userAnswer: string, userId: string): Promise<Task> {
+        const task = await this.taskRepository.findOne({ where: { id: taskId, authorId: userId } });
+        if (!task) {
+            throw new Error('Task not found');
+        }
+        const result = await this.aiService.checkAnswer(task.description, userAnswer);
+        return this.saveTask({
+            id: taskId,
+            ...result
+        }, userId);
     }
 }

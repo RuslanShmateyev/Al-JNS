@@ -14,19 +14,12 @@ import {
     type Edge,
     type Connection,
 } from '@xyflow/react';
-import { RoadmapResponseDto } from '@al-jns/contracts';
+import { RoadmapResponseDto, } from '@al-jns/contracts';
+import type { RoadmapNode } from '@al-jns/contracts';
 import { NodePopup } from '../components/NodePopup';
+import api from '../utils/api';
 import '@xyflow/react/dist/style.css';
 import './FlowPage.css';
-
-interface RoadmapNode {
-    title: string;
-    difficulty: number;
-    toNode: string;
-    description: string;
-    tasks: any[];
-    history: string;
-}
 
 export function FlowPage() {
     const { id } = useParams<{ id: string }>();
@@ -43,8 +36,12 @@ export function FlowPage() {
 
         const fetchRoadmap = async () => {
             try {
-                const response = await fetch(`http://localhost:3333/roadmap/${id}`);
-                const data: RoadmapResponseDto = await response.json();
+                const response = await api.get<RoadmapResponseDto>(`/roadmap/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const data = response.data;
                 setTitle(data.title);
 
                 const rawNodes: RoadmapNode[] = JSON.parse(data.nodes);
@@ -95,7 +92,7 @@ export function FlowPage() {
                         style: { strokeWidth: 1.5 },
                         interactionWidth: 0,
                     }}
-                    nodesDraggable={true}
+                    nodesDraggable={false}
                     nodesConnectable={false}
                     edgesFocusable={false}
                     zoomOnDoubleClick={false}
@@ -109,6 +106,7 @@ export function FlowPage() {
 
                 <NodePopup
                     node={selectedNode}
+                    roadmapId={id || ''}
                     isOpen={isPopupOpen}
                     onClose={closePopup}
                 />
@@ -120,31 +118,63 @@ export function FlowPage() {
 function cleanNodesAndEdges(roadmapNodes: RoadmapNode[]): { nodes: Node[], edges: Edge[] } {
     const nodes: Node[] = [];
     const edges: Edge[] = [];
+    let currentY = 0;
+    const spacing = 80;
 
     roadmapNodes.forEach((node, index) => {
+        const titleCharsPerLine = 15;
+        const titleLines = Math.ceil((node.title?.length || 0) / titleCharsPerLine);
+
+        const nodeHeight = (titleLines * 25);
+
+        if (roadmapNodes[index - 1] && roadmapNodes[index - 1].status === 'completed' && !node.status) {
+            node.status = 'inAction';
+        }
+
+        console.log(index);
+        console.log(roadmapNodes[index - 1]);
+        console.log(node);
+
         nodes.push({
             id: node.title,
-            position: { x: 100, y: index * 120 },
+            position: { x: 100, y: currentY },
             data: {
                 label: node.title,
                 description: node.description,
                 tasks: node.tasks,
                 history: node.history,
-                difficulty: node.difficulty
+                difficulty: node.difficulty,
+                output: roadmapNodes[index + 1] ? true : false,
+                input: index === 0 ? true : false
             },
-            className: `custom-node custom-node-default nopan`
+            className: getClassByNodeStatus(node.status)
         });
 
-        if (node.toNode && node.toNode !== "null") {
+        if (roadmapNodes[index + 1]) {
             edges.push({
                 id: `e-${node.title}-${node.toNode}`,
                 source: node.title,
-                target: node.toNode,
+                target: roadmapNodes[index + 1].title,
                 markerEnd: { type: MarkerType.Arrow },
                 style: { strokeWidth: 1.5 }
             });
         }
+
+        currentY += nodeHeight + spacing;
     });
 
     return { nodes, edges };
+}
+
+function getClassByNodeStatus(status: string | undefined) {
+    switch (status) {
+        case 'inAction':
+            return 'custom-node-in-action';
+        case 'completed':
+            return 'custom-node-completed';
+        case 'failed':
+            return 'custom-node-failed';
+        default:
+            return 'custom-node-default';
+    }
 }

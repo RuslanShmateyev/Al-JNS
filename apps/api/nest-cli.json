@@ -5,9 +5,7 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "plugins": [
-      "@nestjs/swagger/plugin"
-    ],
+    "plugins": [],
     "webpackConfigPath": "webpack.config.js"
   }
 }

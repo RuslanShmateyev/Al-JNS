@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { User } from '../users/user.entity';
 
 @Entity('tasks')
 export class Task {
@@ -9,5 +10,23 @@ export class Task {
     nodeTitle: string;
 
     @Column({ nullable: false })
-    instruction: string;
+    title: string;
+
+    @Column({ nullable: false })
+    description: string;
+
+    @Column({ nullable: false })
+    status: string;
+
+    @Column({ nullable: false })
+    feedback: string;
+
+    @Column({ nullable: false })
+    difficulty: number;
+
+    @Column({ nullable: false })
+    authorId: string;
+
+    @ManyToOne(() => User)
+    author: User;
 }
