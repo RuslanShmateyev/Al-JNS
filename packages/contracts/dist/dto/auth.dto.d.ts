@@ -15,3 +15,8 @@ export declare class AuthResponseDto {
     };
     accessToken: string;
 }
+export declare class LinkTelegramDto {
+    email: string;
+    password: string;
+    telegramId: string;
+}

@@ -17,3 +17,9 @@ export class AuthResponseDto {
     };
     accessToken!: string;
 }
+
+export class LinkTelegramDto {
+    email!: string;
+    password!: string;
+    telegramId!: string;
+}

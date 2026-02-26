@@ -1,16 +1,16 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
+import { TelegrafModule } from 'nestjs-telegraf';
+import { TelegramModule } from '../modules/telegram/telegram.module';
+
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      url: process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/aljns_db',
-      autoLoadEntities: true,
-      synchronize: false,
+    TelegrafModule.forRoot({
+      token: process.env.TELEGRAM_BOT_TOKEN || '',
     }),
+    TelegramModule,
   ],
   controllers: [AppController],
   providers: [AppService],

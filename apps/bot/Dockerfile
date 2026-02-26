@@ -1,47 +1,70 @@
-# apps/bot/Dockerfile
-FROM node:22-alpine AS builder
+# -----------------------------
+# Stage 0: Prune workspace for api (minimize context)
+# -----------------------------
+FROM node:22-alpine AS prune
 
-RUN npm install -g pnpm
+WORKDIR /workspace
 
-WORKDIR /app
+# Enable pnpm
+RUN corepack enable && corepack prepare pnpm@10.24.0 --activate
 
-# Copy root configurations
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# Copy workspace manifests for pruning/cache
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml turbo.json ./
+COPY apps/bot/package.json apps/bot/package.json
+COPY packages/contracts/package.json packages/contracts/package.json
+COPY packages/database/package.json packages/database/package.json
 
-# Copy all package.json files
-COPY apps/api/package.json apps/api/
-COPY apps/bot/package.json apps/bot/
-COPY apps/web/package.json apps/web/
-COPY packages/contracts/package.json packages/contracts/
-COPY packages/database/package.json packages/database/
-
-# Install all workspace dependencies
-RUN pnpm install
-
-# Copy the rest of the source code
+# Copy source (needed for accurate prune graph)
 COPY . .
 
-# Build shared contracts, database client, and the bot application
-RUN pnpm --filter @al-jns/contracts run build
-RUN pnpm --filter @al-jns/database run db:generate
-RUN pnpm --filter bot run build
+# Create a pruned workspace containing only api and its deps
+RUN pnpm dlx turbo prune bot --docker
 
-# Production Stage
-FROM node:22-alpine AS runner
+# -----------------------------
+# Stage 1: Install and build in pruned workspace
+# -----------------------------
+FROM node:22-alpine AS build
+
+WORKDIR /workspace
+RUN corepack enable && corepack prepare pnpm@10.24.0 --activate
+
+# Copy pruned dependency graph and lockfile, install deps
+COPY --from=prune /workspace/out/json/ .
+COPY --from=prune /workspace/out/pnpm-lock.yaml ./pnpm-lock.yaml
+RUN pnpm install --frozen-lockfile
+
+# Copy pruned full sources and build
+COPY --from=prune /workspace/out/full/ .
+
+# Копируем базовые tsconfig файлы (они не включаются в turbo prune)
+COPY tsconfig.base.json tsconfig.backend.json tsconfig.package.json ./
+
+# Build all packages present in the pruned workspace (api + its deps)
+RUN pnpm -r build
+
+# -----------------------------
+# Stage 2: Runtime image (install prod deps)
+# -----------------------------
+FROM node:22-alpine
+#RUN apk update && apk upgrade
 
 WORKDIR /app
+ENV NODE_ENV=prod
+# Enable global webcrypto for Node 18
+### THIS IS NOT REQUIRED FOR NODE:22 ### ENV NODE_OPTIONS=--experimental-global-webcrypto
 
-# Copy necessary files from the builder
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/packages/contracts/dist ./packages/contracts/dist
-COPY --from=builder /app/packages/contracts/package.json ./packages/contracts/package.json
-COPY --from=builder /app/packages/database/node_modules ./packages/database/node_modules
-COPY --from=builder /app/packages/database/package.json ./packages/database/package.json
-COPY --from=builder /app/apps/bot/node_modules ./apps/bot/node_modules
-COPY --from=builder /app/apps/bot/dist ./apps/bot/dist
-COPY --from=builder /app/apps/bot/package.json ./apps/bot/package.json
+# Install pnpm in runtime image
+RUN npm i -g pnpm@10.24.0
 
-# Navigate to the Bot workspace directory
-WORKDIR /app/apps/bot
+# Copy everything from build stage including node_modules
+COPY --from=build /workspace/apps ./apps
+COPY --from=build /workspace/packages ./packages
+COPY --from=build /workspace/node_modules ./node_modules
+COPY --from=build /workspace/package.json ./package.json
+COPY --from=build /workspace/pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY --from=build /workspace/pnpm-lock.yaml ./pnpm-lock.yaml
 
-CMD ["node", "dist/main"]
+EXPOSE 3001
+
+# Start the application
+CMD ["node", "apps/bot/dist/main.js"]

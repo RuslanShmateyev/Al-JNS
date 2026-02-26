@@ -37,10 +37,14 @@ export class AiService {
 ВЕСЬ ОТВЕТ ДОЛЖЕН СООТВЕТСТВОВАТЬ УКАЗАННОМУ ВЫШЕ ФОРМАТУ`;
     }
 
-    getRoadmapNodePrompt(level: string, project: string, nodeName: string): string {
+    getRoadmapNodePrompt(level: string, project: string, nodeName: string, history: string): string {
         return `Уровень знаний пользователя в теме проекта: ${level}. 
 Краткое описание проекта: ${project}. Он делается в рамках roadmap. 
 Тебе нужно сделать описание для node: ${nodeName}.
+В description должны быть описано описание для текущей node. Должны быть примеры и введены ключевые понятия.
+В tasks должны быть основные задания, которые нужно выполнить для прохождения node.
+В history должна быть добавлена история прохождения node (и что было изменено в проекте).
+Текущая история прохождения: ${history}. 
 Формат для ответа: { description: string, tasks: { title: string, description: string, difficulty: number }[], history: string }
 ВЕСЬ ОТВЕТ ДОЛЖЕН СООТВЕТСТВОВАТЬ УКАЗАННОМУ ВЫШЕ ФОРМАТУ`;
     }
@@ -58,6 +62,14 @@ export class AiService {
         return `Задание: ${task}\nОтвет пользователя: ${userAnswer}\n
 Оцени ответ. Дай конструктивный фидбек и укажи, что было упущено.
 Формат для ответа: { status: string, feedback: string }
+ВЕСЬ ОТВЕТ ДОЛЖЕН СООТВЕТСТВОВАТЬ УКАЗАННОМУ ВЫШЕ ФОРМАТУ`;
+    }
+
+    getTenMinuteTaskPrompt(theme: string): string {
+        return `Тема: ${theme}. 
+Создай одно небольшое задание, которое можно выполнить за 10 минут и которое можно выполнить без доступа к компьютеру (на телефоне или планшете). 
+Это должно быть практическое задание или вопрос для проверки понимания.
+Формат для ответа: { title: string, description: string, difficulty: number }
 ВЕСЬ ОТВЕТ ДОЛЖЕН СООТВЕТСТВОВАТЬ УКАЗАННОМУ ВЫШЕ ФОРМАТУ`;
     }
 
@@ -90,8 +102,8 @@ export class AiService {
         return this.generateByPrompt(prompt) as Promise<{ title: string, difficulty: number, toNode: string }[]>;
     }
 
-    async generateRoadmapNode(level: string, project: string, nodeName: string): Promise<{ description: string, tasks: { title: string, description: string, difficulty: number }[], history: string }> {
-        const prompt = this.getRoadmapNodePrompt(level, project, nodeName);
+    async generateRoadmapNode(level: string, project: string, nodeName: string, history: string): Promise<{ description: string, tasks: { title: string, description: string, difficulty: number }[], history: string }> {
+        const prompt = this.getRoadmapNodePrompt(level, project, nodeName, history);
         return this.generateByPrompt(prompt) as Promise<{ description: string, tasks: { title: string, description: string, difficulty: number }[], history: string }>;
     }
 
@@ -103,5 +115,10 @@ export class AiService {
     async checkAnswer(task: string, userAnswer: string): Promise<{ status: string, feedback: string }> {
         const prompt = this.getCheckAnswerPrompt(task, userAnswer);
         return this.generateByPrompt(prompt) as Promise<{ status: string, feedback: string }>;
+    }
+
+    async generateTenMinuteTask(theme: string): Promise<{ title: string, description: string, difficulty: number }> {
+        const prompt = this.getTenMinuteTaskPrompt(theme);
+        return this.generateByPrompt(prompt) as Promise<{ title: string, description: string, difficulty: number }>;
     }
 }

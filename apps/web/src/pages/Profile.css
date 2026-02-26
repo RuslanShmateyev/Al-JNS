@@ -1,0 +1,31 @@
+.profile-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.profile-paper {
+    padding: 2.5rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .profile-container {
+        padding: 1rem;
+    }
+
+    .profile-paper {
+        padding: 1.5rem;
+    }
+}

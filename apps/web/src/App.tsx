@@ -5,6 +5,7 @@ import { FlowPage } from './pages/FlowPage';
 import { NotFound } from './pages/NotFound';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
+import { Profile } from './pages/Profile';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './ProtectedRoute';
 import './App.css';
@@ -21,6 +22,7 @@ function App() {
             <Route path="/" element={<MainLayout />}>
               <Route index element={<Home />} />
               <Route path="flow/:id" element={<FlowPage />} />
+              <Route path="profile" element={<Profile />} />
             </Route>
           </Route>
 

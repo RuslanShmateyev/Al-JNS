@@ -41,7 +41,8 @@ services:
     restart: always
     environment:
       - DATABASE_URL=postgres://postgres:password@postgres:5432/al_jns
-      - BOT_TOKEN=8789805402:AAFdyG-EWu2M7vRj6QnW4Q8vLlLhvGYbe0A
+      - TELEGRAM_BOT_TOKEN=8789805402:AAFdyG-EWu2M7vRj6QnW4Q8vLlLhvGYbe0A
+      - API_URL=http://api:3001
     depends_on:
       postgres:
         condition: service_healthy

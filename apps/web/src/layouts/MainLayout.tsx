@@ -24,7 +24,7 @@ export function MainLayout() {
 
     const navLinks = [
         { label: 'Home', path: '/' },
-        { label: 'Flow Map', path: '/flow' }
+        { label: 'Profile', path: '/profile' }
     ];
 
     const sidebarContent = (
@@ -63,7 +63,7 @@ export function MainLayout() {
                     >
                         <MenuIcon />
                     </IconButton>
-                    <div className="logo">My App</div>
+                    <div className="logo">Al` JNS</div>
                 </div>
                 <div className="header-right" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     {user && <span style={{ color: '#666', fontSize: '14px' }}>{user.email}</span>}

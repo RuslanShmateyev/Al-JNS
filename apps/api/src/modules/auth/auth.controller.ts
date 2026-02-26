@@ -1,6 +1,6 @@
 import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterDto, LoginDto, AuthResponseDto } from '@al-jns/contracts';
+import { RegisterDto, LoginDto, AuthResponseDto, LinkTelegramDto } from '@al-jns/contracts';
 import { Public } from './public.decorator';
 
 @Controller('auth')
@@ -18,5 +18,12 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
         return this.authService.login(loginDto);
+    }
+
+    @Public()
+    @Post('link-telegram')
+    @HttpCode(HttpStatus.OK)
+    async linkTelegram(@Body() dto: LinkTelegramDto): Promise<AuthResponseDto> {
+        return this.authService.linkTelegram(dto);
     }
 }

@@ -48,4 +48,12 @@ export class RoadmapController {
     ): Promise<Roadmap> {
         return this.roadmapService.completeNode(dto.id, dto.nodeName, user.id);
     }
+
+    @Get(':id/active-node')
+    async findActiveNode(
+        @Param('id') id: string,
+        @CurrentUser() user: User,
+    ): Promise<any> {
+        return this.roadmapService.findActiveNode(id, user.id);
+    }
 }

@@ -72,20 +72,23 @@ export class RoadmapsService {
 
     async generate(topic: string, level: string, interests: string[], project: string): Promise<any[]> {
         let roadmap = await this.aiService.generateRoadmap(topic, level, interests, project);
+        let history = "";
 
-        roadmap = await Promise.all(roadmap.map(async node => {
-            const extraData = await this.generateNode(level, project, node.title);
-            return {
+        for (let i = 0; i < roadmap.length; i++) {
+            const node = roadmap[i];
+            const extraData = await this.generateNode(level, project, node.title, history);
+            roadmap[i] = {
                 ...node,
                 ...extraData
             };
-        }));
+            history = extraData.history;
+        }
 
         return roadmap;
     }
 
-    async generateNode(level: string, project: string, nodeName: string): Promise<{ description: string, tasks: { title: string, description: string, difficulty: number }[], history: string }> {
-        const roadmap = await this.aiService.generateRoadmapNode(level, project, nodeName);
+    async generateNode(level: string, project: string, nodeName: string, history: string): Promise<{ description: string, tasks: { title: string, description: string, difficulty: number }[], history: string }> {
+        const roadmap = await this.aiService.generateRoadmapNode(level, project, nodeName, history);
         return roadmap;
     }
 
@@ -112,6 +115,12 @@ export class RoadmapsService {
 
         // Refetch to get updated roadmap
         return this.roadmapsRepository.findOne({ where: { id, authorId: userId } }) as Promise<Roadmap>;
+    }
+
+    async findActiveNode(id: string, userId: string): Promise<RoadmapNode | null> {
+        const roadmap = await this.findOne(id, userId);
+        const nodes: RoadmapNode[] = JSON.parse(roadmap.nodes);
+        return nodes.find(n => n.status !== 'completed') || null;
     }
 
     async calculateProgress(nodes: RoadmapNode[]): Promise<number> {

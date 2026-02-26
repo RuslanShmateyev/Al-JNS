@@ -41,6 +41,21 @@ export function NodePopup({ node, roadmapId, isOpen, onClose }: NodePopupProps) 
         return description.toLowerCase().includes(searchQuery.toLowerCase());
     }, [description, searchQuery]);
 
+    const tasks = useMemo(() => {
+        return (node?.data?.tasks as any[]) || [];
+    }, [node]);
+
+    const filteredTasks = useMemo(() => {
+        if (!searchQuery) return tasks;
+        const query = searchQuery.toLowerCase();
+        return tasks.filter(task =>
+            task.title.toLowerCase().includes(query) ||
+            task.description.toLowerCase().includes(query)
+        );
+    }, [tasks, searchQuery]);
+
+    const hasAnyResults = showDescription || filteredTasks.length > 0;
+
     const handleComplete = async () => {
         if (!node) return;
         try {
@@ -60,7 +75,7 @@ export function NodePopup({ node, roadmapId, isOpen, onClose }: NodePopupProps) 
                 throw new Error('Failed to complete node');
             }
 
-            alert(`Node ${node.id} completed successfully!`);
+            // alert(`Node ${node.id} completed successfully!`);
             onClose();
             // Optional: refresh page or state to show green node
             window.location.reload();
@@ -79,7 +94,7 @@ export function NodePopup({ node, roadmapId, isOpen, onClose }: NodePopupProps) 
             console.log(`Sending Notification request for node ${node?.id} with delay ${notificationDelay}h...`);
             // Mock backend request
             await new Promise(resolve => setTimeout(resolve, 500));
-            alert(`Notification set for node ${node?.id} in ${notificationDelay} hours!`);
+            // alert(`Notification set for node ${node?.id} in ${notificationDelay} hours!`);
             setIsNotificationPopupOpen(false);
             setNotificationDelay('');
         } catch (error) {
@@ -148,10 +163,29 @@ export function NodePopup({ node, roadmapId, isOpen, onClose }: NodePopupProps) 
                         <>
                             {description && showDescription && (
                                 <div className="property-group">
+                                    <label>Description</label>
                                     <span>{highlightText(description, searchQuery)}</span>
                                 </div>
                             )}
-                            {searchQuery && !showDescription && (
+
+                            {filteredTasks.length > 0 && (
+                                <div className="tasks-section">
+                                    <h3>Tasks</h3>
+                                    {filteredTasks.map((task, index) => (
+                                        <div key={index} className="task-item">
+                                            <div className="task-header">
+                                                <span className="task-title">{highlightText(task.title, searchQuery)}</span>
+                                                <span className={`task-difficulty difficulty-${task.difficulty}`}>
+                                                    Level {task.difficulty}
+                                                </span>
+                                            </div>
+                                            <p className="task-description">{highlightText(task.description, searchQuery)}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {searchQuery && !hasAnyResults && (
                                 <p className="no-results-text">No matches found for "{searchQuery}"</p>
                             )}
                         </>

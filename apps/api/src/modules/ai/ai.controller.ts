@@ -3,7 +3,7 @@ import { Controller, Post, Body } from '@nestjs/common';
 import { AiService } from './ai.service';
 import { GetInterestsDto, GetProjectsDto, GenerateRoadmapDto } from '@al-jns/contracts';
 
-@Controller('ai/tasks')
+@Controller('ai')
 export class AiController {
     constructor(private readonly aiService: AiService) { }
 
@@ -20,5 +20,10 @@ export class AiController {
     @Post('roadmap')
     async generateRoadmap(@Body() dto: GenerateRoadmapDto) {
         return this.aiService.generateRoadmap(dto.topic, dto.level, dto.interests, dto.project);
+    }
+
+    @Post('ten-minute-task')
+    async generateTenMinuteTask(@Body() dto: { theme: string }) {
+        return this.aiService.generateTenMinuteTask(dto.theme);
     }
 }

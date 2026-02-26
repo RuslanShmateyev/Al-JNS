@@ -29,12 +29,26 @@ export class UsersService {
     async findByEmailWithPassword(email: string): Promise<User | null> {
         return this.usersRepository.findOne({
             where: { email },
-            select: ['id', 'email', 'name', 'password'],
+            select: ['id', 'email', 'name', 'password', 'telegramId'],
         });
+    }
+
+    async findByTelegramId(telegramId: string): Promise<User | null> {
+        return this.usersRepository.findOne({ where: { telegramId } });
+    }
+
+    async updateTelegramId(userId: string, telegramId: string): Promise<User> {
+        await this.usersRepository.update(userId, { telegramId });
+        return this.findOne(userId);
     }
 
     async create(userData: Partial<User>): Promise<User> {
         const user = this.usersRepository.create(userData);
         return this.usersRepository.save(user);
+    }
+
+    async update(id: string, updateData: Partial<User>): Promise<User> {
+        await this.usersRepository.update(id, updateData);
+        return this.findOne(id);
     }
 }
