@@ -4,6 +4,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Tooltip from '@mui/material/Tooltip';
 import { CompleteNodeDto } from '@al-jns/contracts';
+import api from '../utils/api';
 import './NodePopup.css';
 
 interface NodePopupProps {
@@ -65,15 +66,7 @@ export function NodePopup({ node, roadmapId, isOpen, onClose }: NodePopupProps) 
                 nodeName: node.id // In FlowPage, node.id is node.title
             };
 
-            const response = await fetch(import.meta.env.VITE_API_URL + "/roadmap/completeNode" || 'http://localhost:3333/roadmap/completeNode', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to complete node');
-            }
+            await api.post("/roadmap/completeNode", body);
 
             // alert(`Node ${node.id} completed successfully!`);
             onClose();

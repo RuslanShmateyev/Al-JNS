@@ -12,11 +12,11 @@ import {
 } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import SaveIcon from '@mui/icons-material/Save';
-import axios from 'axios';
+import api from '../utils/api';
 import { UserResponseDto, UpdateUserDto } from '@al-jns/contracts';
 import './Profile.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
 
 export function Profile() {
     const [user, setUser] = useState<UserResponseDto | null>(null);
@@ -38,7 +38,7 @@ export function Profile() {
     const fetchProfile = async () => {
         try {
             setLoading(true);
-            const response = await axios.get<UserResponseDto>(`${API_URL}/users/me`);
+            const response = await api.get<UserResponseDto>(`/users/me`);
             setUser(response.data);
             setFormData({
                 name: response.data.name || '',
@@ -66,7 +66,7 @@ export function Profile() {
             setSaving(true);
             setError(null);
             setSuccess(null);
-            const response = await axios.patch<UserResponseDto>(`${API_URL}/users/me`, formData);
+            const response = await api.patch<UserResponseDto>(`/users/me`, formData);
             setUser(response.data);
             setSuccess('Profile updated successfully!');
         } catch (err: any) {

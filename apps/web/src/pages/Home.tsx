@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { RoadmapResponseDto } from '@al-jns/contracts';
+import api from '../utils/api';
 import { CreateRoadmapModal } from '../components/CreateRoadmapModal';
 import './Home.css';
 
@@ -12,13 +13,8 @@ export function Home() {
     useEffect(() => {
         const fetchRoadmaps = async () => {
             try {
-                const response = await fetch(import.meta.env.VITE_API_URL + "/roadmap" || 'http://localhost:3333/roadmap', {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
-                const data = await response.json();
-                setRoadmaps(data);
+                const response = await api.get<RoadmapResponseDto[]>("/roadmap");
+                setRoadmaps(response.data);
             } catch (error) {
                 console.error('Error fetching roadmaps:', error);
             } finally {

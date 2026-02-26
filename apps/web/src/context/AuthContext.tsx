@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import api from '../utils/api';
 import axios from 'axios';
 import { LoginDto, RegisterDto, AuthResponseDto } from '@al-jns/contracts';
 
@@ -13,7 +14,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<any | null>(null);
@@ -31,7 +32,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, [token]);
 
     const login = async (data: LoginDto) => {
-        const response = await axios.post<AuthResponseDto>(`${API_URL}/auth/login`, data);
+        const response = await api.post<AuthResponseDto>(`/auth/login`, data);
         const { user, accessToken } = response.data;
         setToken(accessToken);
         setUser(user);
@@ -40,7 +41,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const register = async (data: RegisterDto) => {
-        const response = await axios.post<AuthResponseDto>(`${API_URL}/auth/register`, data);
+        const response = await api.post<AuthResponseDto>(`/auth/register`, data);
         const { user, accessToken } = response.data;
         setToken(accessToken);
         setUser(user);

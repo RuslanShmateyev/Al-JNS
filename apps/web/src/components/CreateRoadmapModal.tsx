@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GetInterestsDto, GetProjectsDto, GenerateRoadmapDto } from '@al-jns/contracts';
+import api from '../utils/api';
 import './CreateRoadmapModal.css';
 
 interface CreateRoadmapModalProps {
@@ -27,13 +28,8 @@ export function CreateRoadmapModal({ isOpen, onClose }: CreateRoadmapModalProps)
         setLoading(true);
         try {
             const body: GetInterestsDto = { topic, level };
-            const response = await fetch(import.meta.env.VITE_API_URL + "/roadmap/interests" || 'http://localhost:3333/roadmap/interests', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-                body: JSON.stringify(body),
-            });
-            const data = await response.json();
-            setInterests(data);
+            const response = await api.post<string[]>("/roadmap/interests", body);
+            setInterests(response.data);
             setStep(2);
         } catch (error) {
             console.error('Error fetching interests:', error);
@@ -46,13 +42,8 @@ export function CreateRoadmapModal({ isOpen, onClose }: CreateRoadmapModalProps)
         setLoading(true);
         try {
             const body: GetProjectsDto = { topic, level, interests: selectedInterests };
-            const response = await fetch(import.meta.env.VITE_API_URL + "/roadmap/projects" || 'http://localhost:3333/roadmap/projects', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-                body: JSON.stringify(body),
-            });
-            const data = await response.json();
-            setProjectAdvice(data);
+            const response = await api.post<string[]>("/roadmap/projects", body);
+            setProjectAdvice(response.data);
             setStep(3);
         } catch (error) {
             console.error('Error fetching project advice:', error);
@@ -70,12 +61,8 @@ export function CreateRoadmapModal({ isOpen, onClose }: CreateRoadmapModalProps)
                 interests: selectedInterests,
                 project: selectedProject
             };
-            const response = await fetch(import.meta.env.VITE_API_URL + "/roadmap/generate" || 'http://localhost:3333/roadmap/generate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-                body: JSON.stringify(body),
-            });
-            const data = await response.json();
+            const response = await api.post<{ id: string }>("/roadmap/generate", body);
+            const data = response.data;
             onClose();
             navigate(`/flow/${data.id}`);
         } catch (error) {
