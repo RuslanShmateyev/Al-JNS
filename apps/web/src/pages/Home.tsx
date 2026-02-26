@@ -12,7 +12,7 @@ export function Home() {
     useEffect(() => {
         const fetchRoadmaps = async () => {
             try {
-                const response = await fetch('http://localhost:3333/roadmap', {
+                const response = await fetch(import.meta.env.VITE_API_URL + "/roadmap" || 'http://localhost:3333/roadmap', {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }

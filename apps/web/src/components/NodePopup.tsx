@@ -65,7 +65,7 @@ export function NodePopup({ node, roadmapId, isOpen, onClose }: NodePopupProps) 
                 nodeName: node.id // In FlowPage, node.id is node.title
             };
 
-            const response = await fetch('http://localhost:3333/roadmap/completeNode', {
+            const response = await fetch(import.meta.env.VITE_API_URL + "/roadmap/completeNode" || 'http://localhost:3333/roadmap/completeNode', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),

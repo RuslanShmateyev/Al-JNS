@@ -27,7 +27,7 @@ export function CreateRoadmapModal({ isOpen, onClose }: CreateRoadmapModalProps)
         setLoading(true);
         try {
             const body: GetInterestsDto = { topic, level };
-            const response = await fetch('http://localhost:3333/roadmap/interests', {
+            const response = await fetch(import.meta.env.VITE_API_URL + "/roadmap/interests" || 'http://localhost:3333/roadmap/interests', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
                 body: JSON.stringify(body),
@@ -46,7 +46,7 @@ export function CreateRoadmapModal({ isOpen, onClose }: CreateRoadmapModalProps)
         setLoading(true);
         try {
             const body: GetProjectsDto = { topic, level, interests: selectedInterests };
-            const response = await fetch('http://localhost:3333/roadmap/projects', {
+            const response = await fetch(import.meta.env.VITE_API_URL + "/roadmap/projects" || 'http://localhost:3333/roadmap/projects', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
                 body: JSON.stringify(body),
@@ -70,7 +70,7 @@ export function CreateRoadmapModal({ isOpen, onClose }: CreateRoadmapModalProps)
                 interests: selectedInterests,
                 project: selectedProject
             };
-            const response = await fetch('http://localhost:3333/roadmap/generate', {
+            const response = await fetch(import.meta.env.VITE_API_URL + "/roadmap/generate" || 'http://localhost:3333/roadmap/generate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
                 body: JSON.stringify(body),
